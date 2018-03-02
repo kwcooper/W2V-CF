@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Question, do perceptrons suffer from CF?
+# Result: 
 
 class Perceptron:
 
@@ -48,7 +49,7 @@ def testNet(x):
 
 # Define a network and train it in full
 # This will be our interleved comparison
-print("\nInterleaved")
+print("\nINTERLEAVED")
 a = Perceptron()
 t = 0
 epochs = 150
@@ -62,16 +63,16 @@ while t < epochs:
     error += a.train(1,0,0)   # third training AND
     error += a.train(1,1,1)   # fourth training AND
     if t % 10 == 0:
-        print("Epoch ", t, ": ", error)
+        print("Epoch ", t, " : ", error)
     errList.append(error)
     t += 1
 print("Weights end: ", a.w1,a.w2)
 
 # Tests
-print(a.forward(1,1), " (1)")
-print(a.forward(1,0), " (0)")
-print(a.forward(0,1), " (0)")
-print(a.forward(0,0), " (0)")
+tst_a = testNet(a)
+print(" 11 10 01 00 ")
+print("[1  0  0  0]")
+print(tst_a)
 
 ### Plot the error
 ##plt.plot(errList)
@@ -79,7 +80,7 @@ print(a.forward(0,0), " (0)")
 ##plt.title(title)
 ##plt.show()
 
-print("\nSequential")
+print("\nSEQUENTIAL")
 b = Perceptron()
 t = 0
 errList = []
@@ -88,9 +89,7 @@ print("Weights init: ", b.w1,b.w2)
 while t < 50:
     error = 0
     error += b.train(0,0,0)   # first training AND 
-    error += b.train(0,1,0)   # second training AND
-    error += b.train(0,0,0)   # first training AND 
-    error += b.train(0,1,0)   # second training AND
+    error += b.train(1,1,1)   # second training AND
     if t % 10 == 0:
         print("Epoch ", t, ": ", error)
     errList.append(error)
@@ -98,32 +97,28 @@ while t < 50:
 print("Weights end: ", b.w1,b.w2)
 
 # Tests
-print(b.forward(1,1), " (1)")
-print(b.forward(1,0), " (0)")
-print(b.forward(0,1), " (0)")
-print(b.forward(0,0), " (0)")
+tst_b_1 = testNet(b)
+print(" 11 10 01 00 ")
+print("[1  0  0  0]")
+print(tst_b_1)
 
 t = 0
-print("Training 2")
+print("\nTraining 2")
 print("Weights init: ", b.w1,b.w2)
 while t < 50:
     error = 0
     error += b.train(1,0,0)   # third training AND
-    error += b.train(1,1,1)   # fourth training AND
+    error += b.train(0,1,0)   # fourth training AND
     if t % 10 == 0:
         print("Epoch ", t, ": ", error)
     t += 1
 print("Weights end: ", b.w1,b.w2)
 
 # Tests
-print(b.forward(1,1), " (1)")
-print(b.forward(1,0), " (0)")
-print(b.forward(0,1), " (0)")
-print(b.forward(0,0), " (0)")
+tst_b_2 = testNet(b)
+print(" 11 10 01 00 ")
+print("[1  0  0  0]")
+print(tst_b_2)
 
-
-
-tst = testNet(b)
-print(tst)
     
 
