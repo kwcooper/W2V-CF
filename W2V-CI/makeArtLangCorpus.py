@@ -1,38 +1,46 @@
-import numpy as np
-import os
-import pickle
-
-from sklearn.preprocessing import LabelBinarizer
-from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
-from scipy.spatial.distance import cosine
-#os.chdir("Desktop")
-
-#for i in range(0, 100):
-import copy
 import pandas as pd
+from pandas import DataFrame
+import random
 
 
 
 
-dframe['Vehicles'] = (dframe['car'] + dframe['truck'])/2
-dframe['Dinnerware'] = (dframe['glass'] + dframe['plate'])/2
-#dframe['News'] = (dframe['news'] + dframe['story'])/2
+d = [0,1,2,3]
+
+df = DataFrame(data = d)
+
+# Define the elman setences 
+vehList = ['man break car',
+           'woman break car',
+           'man break truck',
+           'woman break truck']
+
+dishList = ['man break plate',
+            'woman break plate',
+            'man break glass',
+            'woman break glass']
+
+# multiply the setences
+# (keep them seperated if we want to do something later)
+numS = 100
+vehCorpus = []
+dishCorpus = []
+
+for sentence in vehList:
+    vehCorpus.append([sentence]*numS)
+        
+for sentence in dishList:
+    dishCorpus.append([sentence]*numS)
+
+# make list of all random sentences
+vehFlat = [i for sL in vehCorpus for i in sL]
+dishFlat = [i for sL in dishCorpus for i in sL]
+
+# now combine them to make the corpus
+artLang = vehFlat + dishFlat
+artLangShuffled = random.sample(artLang, len(artLang))
 
 
-dframe['closer to vehicles'] = (dframe['Vehicles'] < dframe['Dinnerware']) #& (dframe['Vehicles'] < dframe['News']) 
-dframe['closer to dinnerware'] = (dframe['Dinnerware'] < dframe['Vehicles'])# & (dframe['Dinnerware'] < dframe['News']) 
-
-#dframe['closer to vehicles'] = (dframe['Vehicles'] < dframe['Dinnerware']) & (dframe['Vehicles'] < dframe['News']) 
-#dframe['closer to dinnerware'] = (dframe['Dinnerware'] < dframe['Vehicles']) & (dframe['Dinnerware'] < dframe['News']) 
-#dframe['closer to news'] = (dframe['News'] < dframe['Dinnerware']) & (dframe['News'] < dframe['Vehicles']) 
-
-print("Vehicles Occuring First: " + str(sum(dframe['closer to vehicles'])))
-print( "Dinnerware Occuring First: " + str(sum(dframe['closer to dinnerware'])))
-#print "News Occuring First: " + str(sum(dframe['closer to news']))
-
-print( "Proportion of Vehicles Occuring First: " + str(sum(dframe['closer to vehicles'])/10000.0))
-print( "Proportion of Dinnerware Occuring First: " + str(sum(dframe['closer to dinnerware'])/10000.0))
-#print "Phroportion of News Occuring First: " + str(sum(dframe['closer to news'])/10000.0))
-
-dframe.to_csv('VehicleDinnerware 10000 Runs Unbal dinner_vehi1.csv')
+# save the shuffled data to a txt file
+with open('artLang_2s_8000.txt', mode='wt', encoding='utf-8') as f:
+        f.write('\n'.join(artLangShuffled))
