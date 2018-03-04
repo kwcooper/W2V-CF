@@ -1,9 +1,7 @@
 import pandas as pd
 from pandas import DataFrame
 import random
-
-
-
+import os
 
 d = [0,1,2,3]
 
@@ -22,7 +20,7 @@ dishList = ['man break plate',
 
 # multiply the setences
 # (keep them seperated if we want to do something later)
-numS = 100
+numS = 1000
 vehCorpus = []
 dishCorpus = []
 
@@ -42,5 +40,7 @@ artLangShuffled = random.sample(artLang, len(artLang))
 
 
 # save the shuffled data to a txt file
-with open('artLang_2s_8000.txt', mode='wt', encoding='utf-8') as f:
+print('Writing artificial corpus...')
+os.chdir('corpus')
+with open('artLang_2s_8x1000_shuffled.txt', mode='wt', encoding='utf-8') as f:
         f.write('\n'.join(artLangShuffled))
