@@ -1,18 +1,19 @@
 #testr
 
 import os
+import pickle
 from collections import defaultdict
+import copy
 
 import numpy as np
-import pickle
-
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.decomposition import PCA
 from scipy.spatial.distance import cosine
+import matplotlib.pyplot as plt
+
 
 import gensim
 
-import matplotlib.pyplot as plt
 
 
 # Grab the data
@@ -74,3 +75,15 @@ for i in range(0, iterations):
     vectors = return_vectors(model, vocab)
     vectorDic[i] = vectors 
 
+full = copy.deepcopy(dic)
+
+queryWord=  'break'
+checkWord = ['car', 'truck', 'glass', 'plate']
+
+from collections import defaultdict
+
+dic = defaultdict(dict)
+for v in range(0, iterations):
+    first = full[v]
+    for c in checkWord:
+        dic[v][c] = cosine(first[queryWord], first[c])
