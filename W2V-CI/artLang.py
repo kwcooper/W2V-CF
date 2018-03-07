@@ -1,4 +1,3 @@
-#testr
 
 import os
 import copy
@@ -15,6 +14,12 @@ from scipy.spatial.distance import cosine
 
 import gensim
 
+# td
+#   add handeling for sentense order (double check if this is it)
+#   add functions for this and model training
+#   add code for plotting
+#   add code for csv handeling
+#   update csv nameing scheme
 
 # Grab the data
 os.chdir("corpus")
@@ -46,7 +51,7 @@ for sent in data:
 ##dataa = senDish + senVeh[slic:]
         
 # This determines the training order!
-dishVeh =  senVeh + senDish
+dishVeh = senVeh + senDish
 
 # break the sentences up into lists of words
 sentences = []
