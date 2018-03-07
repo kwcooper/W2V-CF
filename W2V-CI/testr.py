@@ -44,8 +44,9 @@ for sent in data:
 
 ##slic = int(len(senVeh) - len(senDish)/2)
 ##dataa = senDish + senVeh[slic:]
-
-dishVeh = senDish + senVeh
+        
+# This determines the training order!
+dishVeh =  senVeh + senDish
 
 # break the sentences up into lists of words
 sentences = []
@@ -63,11 +64,11 @@ for s in dishVeh:
 # Train the W2V model!
 vectorDic = defaultdict(dict)
 iterations = 100
-print('Training the Model...')
+print("Training the Model...")
 for i in range(0, iterations):
     #np.random.shuffle(sentences)
     if (i <= 100 and i % 10 == 0) or i % 100 == 0:
-        print('iteration: ', i)
+        print("iteration: ", i)
     # uses skipgram, 300 dimensions, max dist 2, 5 iterations, seed changes
     model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=5, seed=i)
     vectors = returnVectors(model, vocab)
@@ -83,7 +84,9 @@ for i in range(0, iterations):
     for word in checkWord:
         cosDic[i][word] = cosine(first[queryWord], first[word])
 
+
 # Compute final measurements
+print("\nResults:")
 dframe = pd.DataFrame(cosDic).T
 
 dframe['Vehicles'] = (dframe['car'] + dframe['truck'])/2
@@ -97,3 +100,6 @@ print("Vehicles Occuring First: " + str(sum(dframe['closer2vehicles'])))
 print("Dinnerware Occuring First: " + str(sum(dframe['closer2dinnerware'])))
 print("Proportion of Vehicles Occuring First: " + str(sum(dframe['closer2vehicles'])/float(iterations)))
 print("Proportion of Dinnerware Occuring First: " + str(sum(dframe['closer2dinnerware'])/float(iterations)))
+
+#name = ''
+#dframe.to_csv('results/VehicleDinnerware_100Runs.csv')
