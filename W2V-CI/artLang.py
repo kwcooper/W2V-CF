@@ -1,6 +1,7 @@
 
 import os
 import copy
+import time
 import pickle
 from collections import defaultdict
 
@@ -18,13 +19,11 @@ import gensim
 #   add handeling for sentense order (double check if this is it)
 #   add functions for this and model training
 #   add code for plotting
-#   add code for csv handeling
-#   update csv nameing scheme
 
 # Grab the data
 os.chdir("corpus")
 print(os.getcwd())
-data = open('artLang_2s_8x1000_shuffled.txt').read().splitlines()
+data = open("artLang_2s_8x1000_shuffled.txt").read().splitlines()
 os.chdir("..")
 
 def returnVectors(model, vocab):
@@ -42,9 +41,9 @@ def saveVectors(vector_dict, i):
 senVeh = []
 senDish = []
 for sent in data:
-    if sent.split()[2] == 'car' or sent.split()[2] == 'truck':
+    if sent.split()[2] == "car" or sent.split()[2] == "truck":
         senVeh.append(sent)
-    elif sent.split()[2] == 'glass' or sent.split()[2] == 'plate':
+    elif sent.split()[2] == "glass" or sent.split()[2] == "plate":
         senDish.append(sent)
 
 ##slic = int(len(senVeh) - len(senDish)/2)
@@ -68,8 +67,9 @@ for s in dishVeh:
 
 # Train the W2V model!
 vectorDic = defaultdict(dict)
-iterations = 100
+iterations = 10000
 print("Training the Model...")
+start = time.time()
 for i in range(0, iterations):
     #np.random.shuffle(sentences)
     if (i <= 100 and i % 10 == 0) or i % 100 == 0:
@@ -78,11 +78,12 @@ for i in range(0, iterations):
     model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=5, seed=i)
     vectors = returnVectors(model, vocab)
     vectorDic[i] = vectors 
+print("Time:", (time.time() - start)/60, "minutes")
 
-# Now let's compute the distances
+# Now let"s compute the distances
 full = copy.deepcopy(vectorDic)
-queryWord=  'break'
-checkWord = ['car', 'truck', 'glass', 'plate']
+queryWord=  "break"
+checkWord = ["car", "truck", "glass", "plate"]
 cosDic = defaultdict(dict)
 for i in range(0, iterations):
     first = full[i]
@@ -94,17 +95,25 @@ for i in range(0, iterations):
 print("\nResults:")
 dframe = pd.DataFrame(cosDic).T
 
-dframe['Vehicles'] = (dframe['car'] + dframe['truck'])/2
-dframe['Dinnerware'] = (dframe['glass'] + dframe['plate'])/2
+dframe["Vehicles"] = (dframe["car"] + dframe["truck"])/2
+dframe["Dinnerware"] = (dframe["glass"] + dframe["plate"])/2
 
-dframe['closer2vehicles'] = (dframe['Vehicles'] < dframe['Dinnerware'])
-dframe['closer2dinnerware'] = (dframe['Dinnerware'] < dframe['Vehicles'])
+dframe["closer2vehicles"] = (dframe["Vehicles"] < dframe["Dinnerware"])
+dframe["closer2dinnerware"] = (dframe["Dinnerware"] < dframe["Vehicles"])
 
 # Display results
-print("Vehicles Occuring First: " + str(sum(dframe['closer2vehicles'])))
-print("Dinnerware Occuring First: " + str(sum(dframe['closer2dinnerware'])))
-print("Proportion of Vehicles Occuring First: " + str(sum(dframe['closer2vehicles'])/float(iterations)))
-print("Proportion of Dinnerware Occuring First: " + str(sum(dframe['closer2dinnerware'])/float(iterations)))
+print("Vehicles Occuring First: " + str(sum(dframe["closer2vehicles"])))
+print("Dinnerware Occuring First: " + str(sum(dframe["closer2dinnerware"])))
+print("Proportion of Vehicles Occuring First: " + str(sum(dframe["closer2vehicles"])/float(iterations)))
+print("Proportion of Dinnerware Occuring First: " + str(sum(dframe["closer2dinnerware"])/float(iterations)))
 
-#name = ''
-#dframe.to_csv('results/VehicleDinnerware_100Runs.csv')
+c2v = sum(dframe["closer2vehicles"])/float(iterations)
+c2d = sum(dframe["closer2dinnerware"])/float(iterations)
+print("v to d Ratio:", c2v/c2d)
+
+
+name = "results/VehicleDinnerware_" + str(iterations) + "runs.csv"
+print("\nSaving to", name)
+dframe.to_csv(name)
+
+
