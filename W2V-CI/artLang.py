@@ -72,8 +72,8 @@ print("Training the Model...")
 start = time.time()
 for i in range(0, iterations):
     #np.random.shuffle(sentences)
-    if (i <= 100 and i % 10 == 0) or i % 100 == 0:
-        print("iteration: ", i)
+    if (i+1 <= 100 and i+1 % 10 == 0) or i+1 % 100 == 0:
+        print("iteration: ", i+1)
     # uses skipgram, 300 dimensions, max dist 2, 5 iterations, seed changes
     model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=5, seed=i)
     vectors = returnVectors(model, vocab)
