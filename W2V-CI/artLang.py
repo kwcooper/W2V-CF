@@ -8,9 +8,6 @@ from collections import defaultdict
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
-from sklearn.preprocessing import LabelBinarizer
-from sklearn.decomposition import PCA
 from scipy.spatial.distance import cosine
 
 import gensim
@@ -18,7 +15,6 @@ import gensim
 # td
 #   add handeling for sentense order (double check if this is it)
 #   add functions for this and model training
-#   add code for plotting
 
 # Grab the data
 os.chdir("corpus")
@@ -49,7 +45,7 @@ for sent in data:
 ##slic = int(len(senVeh) - len(senDish)/2)
 ##dataa = senDish + senVeh[slic:]
         
-# This determines the training order!
+# (!) This determines the training order!
 dishVeh = senVeh + senDish
 
 # break the sentences up into lists of words
@@ -67,20 +63,20 @@ for s in dishVeh:
 
 # Train the W2V model!
 vectorDic = defaultdict(dict)
-iterations = 10000
+iterations = 1000
 print("Training the Model...")
 start = time.time()
 for i in range(0, iterations):
-    #np.random.shuffle(sentences)
-    if (i+1 <= 100 and i+1 % 10 == 0) or i+1 % 100 == 0:
-        print("iteration: ", i+1)
+    np.random.shuffle(sentences)
+    if (i <= 100 and i % 10 == 0) or i % 100 == 0:
+        print("iteration: ", i)
     # uses skipgram, 300 dimensions, max dist 2, 5 iterations, seed changes
     model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=5, seed=i)
     vectors = returnVectors(model, vocab)
     vectorDic[i] = vectors 
 print("Time:", (time.time() - start)/60, "minutes")
 
-# Now let"s compute the distances
+# Now let"s compute the distances to the queryWord
 full = copy.deepcopy(vectorDic)
 queryWord=  "break"
 checkWord = ["car", "truck", "glass", "plate"]
@@ -93,27 +89,46 @@ for i in range(0, iterations):
 
 # Compute final measurements
 print("\nResults:")
-dframe = pd.DataFrame(cosDic).T
+df = pd.DataFrame(cosDic).T
 
-dframe["Vehicles"] = (dframe["car"] + dframe["truck"])/2
-dframe["Dinnerware"] = (dframe["glass"] + dframe["plate"])/2
+df["Vehicles"] = (df["car"] + df["truck"])/2
+df["Dinnerware"] = (df["glass"] + df["plate"])/2
 
-dframe["closer2vehicles"] = (dframe["Vehicles"] < dframe["Dinnerware"])
-dframe["closer2dinnerware"] = (dframe["Dinnerware"] < dframe["Vehicles"])
+# for how many is the distance greater
+df["closer2vehicles"] = (df["Vehicles"] < df["Dinnerware"])
+df["closer2dinnerware"] = (df["Dinnerware"] < df["Vehicles"])
 
 # Display results
-print("Vehicles Occuring First: " + str(sum(dframe["closer2vehicles"])))
-print("Dinnerware Occuring First: " + str(sum(dframe["closer2dinnerware"])))
-print("Proportion of Vehicles Occuring First: " + str(sum(dframe["closer2vehicles"])/float(iterations)))
-print("Proportion of Dinnerware Occuring First: " + str(sum(dframe["closer2dinnerware"])/float(iterations)))
+print("Vehicles Occuring First: " + str(sum(df["closer2vehicles"])))
+print("Dinnerware Occuring First: " + str(sum(df["closer2dinnerware"])))
+print("Proportion of Vehicles Occuring First: " + str(sum(df["closer2vehicles"])/float(iterations)))
+print("Proportion of Dinnerware Occuring First: " + str(sum(df["closer2dinnerware"])/float(iterations)))
 
-c2v = sum(dframe["closer2vehicles"])/float(iterations)
-c2d = sum(dframe["closer2dinnerware"])/float(iterations)
+c2v = sum(df["closer2vehicles"])/float(iterations)
+c2d = sum(df["closer2dinnerware"])/float(iterations)
 print("v to d Ratio:", c2v/c2d)
-
 
 name = "results/VehicleDinnerware_" + str(iterations) + "runs.csv"
 print("\nSaving to", name)
-dframe.to_csv(name)
+df.to_csv(name)
 
+
+
+#plotting results
+distVeh = df["Vehicles"]
+distDish = df["Dinnerware"]
+distVehMean = np.mean(distVeh)
+distDishMean = np.mean(distDish)
+
+labels = ("Vehicles", "Dinnerware")
+yPos = np.arange(len(labels))
+results = [distVehMean, distDishMean]
+ 
+plt.bar(yPos, results, align="center", alpha=0.5)
+plt.xticks(yPos, labels)
+plt.ylabel("Distance")
+t = "Distance from cue word | " + str(iterations) + " Iterations"
+plt.title(t)
+ 
+plt.show()
 
