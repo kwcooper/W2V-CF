@@ -13,14 +13,20 @@ from scipy.spatial.distance import cosine
 import gensim
 
 # td
-#   add handeling for sentense order (double check if this is it)
 #   add functions for this and model training
+#   add logging dataframe
 
 # Grab the data
 os.chdir("corpus")
 print(os.getcwd())
 data = open("artLang_2s_8x1000_shuffled.txt").read().splitlines()
 os.chdir("..")
+
+# simulation parameters
+order = 1 # Determines the order of sentenses [0 1]
+shuff = False # For random condition
+iterations = 1000 # 10k~15m; 1k~1.5m
+
 
 def returnVectors(model, vocab):
     vectorDict = {}
@@ -45,17 +51,20 @@ for sent in data:
 ##slic = int(len(senVeh) - len(senDish)/2)
 ##dataa = senDish + senVeh[slic:]
         
-# (!) This determines the training order!
-dishVeh = senVeh + senDish
+# determine the training order
+if order:
+    tenses = senDish + senVeh
+if ~order:
+    tenses = senVeh + senDish
 
 # break the sentences up into lists of words
 sentences = []
-for s in dishVeh:
+for s in tenses:
     sentences.append(s.split())
 
 # collect each of the words used in the sentenses
 vocab = []
-for s in dishVeh:
+for s in tenses:
     for si in s.split():
         if si not in vocab:
             vocab.append(si)
@@ -63,17 +72,21 @@ for s in dishVeh:
 
 # Train the W2V model!
 vectorDic = defaultdict(dict)
-iterations = 1000
 print("Training the Model...")
+trainingTime = []
 start = time.time()
 for i in range(0, iterations):
-    np.random.shuffle(sentences)
-    if (i <= 100 and i % 10 == 0) or i % 100 == 0:
+    if shuff:
+        np.random.shuffle(sentences)
+    #if (i <= 100 and i % 10 == 0) or i % 1000 == 0:
+    if i % 1000 == 0:
         print("iteration: ", i)
     # uses skipgram, 300 dimensions, max dist 2, 5 iterations, seed changes
     model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=5, seed=i)
     vectors = returnVectors(model, vocab)
-    vectorDic[i] = vectors 
+    vectorDic[i] = vectors
+    trainingTime.append((time.time()-start))
+    
 print("Time:", (time.time() - start)/60, "minutes")
 
 # Now let"s compute the distances to the queryWord
@@ -115,6 +128,7 @@ df.to_csv(name)
 
 
 #plotting results
+print("Plotting results")
 distVeh = df["Vehicles"]
 distDish = df["Dinnerware"]
 distVehMean = np.mean(distVeh)
@@ -129,6 +143,11 @@ plt.xticks(yPos, labels)
 plt.ylabel("Distance")
 t = "Distance from cue word | " + str(iterations) + " Iterations"
 plt.title(t)
- 
 plt.show()
 
+# training time plt
+plt.plot(trainingTime)
+plt.title("Training time (s per iteration)")
+plt.show()
+
+print("\nfin")
