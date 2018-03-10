@@ -23,9 +23,9 @@ data = open("artLang_2s_8x1000_shuffled.txt").read().splitlines()
 os.chdir("..")
 
 # simulation parameters
-order = 1 # Determines the order of sentenses [0 1]
+order = 0 # Determines the order of sentenses [0 1]
 shuff = False # For random condition
-iterations = 1000 # 10k~15m; 1k~1.5m
+iterations = 10 # 10k~15m; 1k~1.5m
 
 
 def returnVectors(model, vocab):
