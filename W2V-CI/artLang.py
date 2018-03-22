@@ -23,9 +23,9 @@ data = open("artLang_2s_8x1000_shuffled.txt").read().splitlines()
 os.chdir("..")
 
 # simulation parameters
-order = 0 # Determines the order of sentenses [0 1]
+order = 1 # Determines the order of sentenses 1:Db4V 0:Vb4D
 shuff = False # For random condition
-iterations = 10 # 10k~15m; 1k~1.5m
+iterations = 100 # 10k~15m; 1k~1.5m
 
 
 def returnVectors(model, vocab):
@@ -52,10 +52,12 @@ for sent in data:
 ##dataa = senDish + senVeh[slic:]
         
 # determine the training order
-if order:
+if order == 1:
     tenses = senDish + senVeh
-if ~order:
+    oTxt = "D b4 V |"
+else:
     tenses = senVeh + senDish
+    oTxt = "V b4 D |"
 
 # break the sentences up into lists of words
 sentences = []
@@ -81,6 +83,7 @@ for i in range(0, iterations):
     #if (i <= 100 and i % 10 == 0) or i % 1000 == 0:
     if i % 1000 == 0:
         print("iteration: ", i)
+    #reduce  iter to test overfitting?
     # uses skipgram, 300 dimensions, max dist 2, 5 iterations, seed changes
     model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=5, seed=i)
     vectors = returnVectors(model, vocab)
@@ -99,11 +102,16 @@ for i in range(0, iterations):
     for word in checkWord:
         cosDic[i][word] = cosine(first[queryWord], first[word])
 
+#
+
+# mds Plot
+
 
 # Compute final measurements
 print("\nResults:")
 df = pd.DataFrame(cosDic).T
 
+# Are these distances?
 df["Vehicles"] = (df["car"] + df["truck"])/2
 df["Dinnerware"] = (df["glass"] + df["plate"])/2
 
@@ -129,6 +137,23 @@ df.to_csv(name)
 
 #plotting results
 print("Plotting results")
+c2v = sum(df["closer2vehicles"])
+c2d = sum(df["closer2dinnerware"])
+print(c2v,c2d)
+labels = ("c2Vehicles", "c2Dinnerware")
+yPos = np.arange(len(labels))
+results = [c2v, c2d]
+ 
+plt.bar(yPos, results, align="center", alpha=0.5)
+plt.xticks(yPos, labels)
+plt.ylabel("Iterations")
+t = "Binary Rank | " + oTxt + str(iterations) + " Iterations"
+plt.title(t)
+plt.show()
+
+
+
+
 distVeh = df["Vehicles"]
 distDish = df["Dinnerware"]
 distVehMean = np.mean(distVeh)
@@ -146,8 +171,8 @@ plt.title(t)
 plt.show()
 
 # training time plt
-plt.plot(trainingTime)
-plt.title("Training time (s per iteration)")
-plt.show()
+##plt.plot(trainingTime)
+##plt.title("Training time (s per iteration)")
+##plt.show()
 
 print("\nfin")
