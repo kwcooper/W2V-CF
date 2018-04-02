@@ -85,7 +85,7 @@ for i in range(0, iterations):
         print("iteration: ", i)
     #reduce  iter to test overfitting?
     # uses skipgram, 300 dimensions, max dist 2, 5 iterations, seed changes
-    model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=5, seed=i)
+    model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=2, seed=i)
     vectors = returnVectors(model, vocab)
     vectorDic[i] = vectors
     trainingTime.append((time.time()-start))
@@ -129,7 +129,7 @@ c2v = sum(df["closer2vehicles"])/float(iterations)
 c2d = sum(df["closer2dinnerware"])/float(iterations)
 print("v to d Ratio:", c2v/c2d)
 
-name = "results/VehicleDinnerware_" + str(iterations) + "runs.csv"
+name = "results/VehicleDinnerware_2iter_" + str(iterations) + "runs.csv"
 print("\nSaving to", name)
 df.to_csv(name)
 
@@ -147,7 +147,7 @@ results = [c2v, c2d]
 plt.bar(yPos, results, align="center", alpha=0.5)
 plt.xticks(yPos, labels)
 plt.ylabel("Iterations")
-t = "Binary Rank | " + oTxt + str(iterations) + " Iterations"
+t = "2 iter Binary Rank | " + oTxt + str(iterations) + " Iterations"
 plt.title(t)
 plt.show()
 
@@ -166,7 +166,7 @@ results = [distVehMean, distDishMean]
 plt.bar(yPos, results, align="center", alpha=0.5)
 plt.xticks(yPos, labels)
 plt.ylabel("Distance")
-t = "Distance from cue word | " + str(iterations) + " Iterations"
+t = "2iter Distance from cue word | " + str(iterations) + " Iterations"
 plt.title(t)
 plt.show()
 
