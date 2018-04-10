@@ -16,18 +16,23 @@ import gensim
 #   add functions for this and model training
 #   add logging dataframe
 
+
+#4 sims:  2d1v; 1v2d; 2v1d; 1d2v
+# 2
+
 # Grab the data
 os.chdir("corpus")
 print(os.getcwd())
-#data = open("artLang_2s_1-2Bias_v-d_8x1000_shuffled.txt").read().splitlines()
-data = open("artLang_2s_2-1Bias_v-d_8x1000_shuffled.txt").read().splitlines()
+d1 = open("artLang_2s_1-2Bias_v-d_8x1000_shuffled.txt").read().splitlines()
+d2 = open("artLang_2s_2-1Bias_v-d_8x1000_shuffled.txt").read().splitlines()
 os.chdir("..")
 
 # simulation parameters
-order = 1 # Determines the order of sentenses 1:Db4V 0:Vb4D
+#order = 0 # Determines the order of sentenses 1:Db4V 0:Vb4D
 shuff = False # For random condition
 iterations = 10000 # 10k~15m; 1k~1.5m
-
+#2d1v; 1v2d; 2v1d; 1d2v
+comb = 2
 
 def returnVectors(model, vocab):
     vectorDict = {}
@@ -38,6 +43,29 @@ def returnVectors(model, vocab):
 def saveVectors(vector_dict, i):
     filename = open("vectors/veh-dish_vectors_" +str(i) + ".pkl", "wb")
     pickle.dump(vector_dict, filename)
+
+# choose combination
+if comb == 1:
+    data = d1
+    order = 1
+    rTxt = "2d1v"
+elif comb == 2:
+    data = d1
+    order = 0
+    rTxt = "1v2d"
+elif comb == 3:
+    data = d2
+    order = 0
+    rTxt = "2v1d"
+elif comb == 4:
+    data = d2
+    order = 1
+    rTxt = "1d2v"
+else:
+    print("Error")
+
+
+
 
 # Split the lists into their respective senses
 # legacy from handeling unequal lists
@@ -53,12 +81,14 @@ for sent in data:
 ##dataa = senDish + senVeh[slic:]
         
 # determine the training order
-if order == 0:
+if order == 1:
     tenses = senDish + senVeh
     oTxt = "D b4 V |"
 else:
     tenses = senVeh + senDish
     oTxt = "V b4 D |"
+
+print("Running", oTxt[0:6])
 
 # break the sentences up into lists of words
 sentences = []
@@ -103,8 +133,6 @@ for i in range(0, iterations):
     for word in checkWord:
         cosDic[i][word] = cosine(first[queryWord], first[word])
 
-# 2-1:v-d
-
 
 
 # Compute final measurements
@@ -129,7 +157,7 @@ c2v = sum(df["closer2vehicles"])/float(iterations)
 c2d = sum(df["closer2dinnerware"])/float(iterations)
 print("v to d Ratio:", c2v/c2d)
 
-name = "results/biased/2-1_VehicleDinnerware_" + str(iterations) + "runs.csv"
+name = "results/biased2/" + rTxt + "_" + str(iterations) + "runs.csv"
 print("\nSaving to", name)
 df.to_csv(name)
 
@@ -147,8 +175,10 @@ results = [c2v, c2d]
 plt.bar(yPos, results, align="center", alpha=0.5)
 plt.xticks(yPos, labels)
 plt.ylabel("Iterations")
-t = "2v-1d_Binary Rank | " + oTxt + str(iterations) + " Iterations"
+t = rTxt + "_Binary Rank | " + str(iterations) + " Iterations"
 plt.title(t)
+p = "figures/biased2/" + rTxt + "_br_10000_itr5.png"
+plt.savefig(p)
 plt.show()
 
 
@@ -166,8 +196,10 @@ results = [distVehMean, distDishMean]
 plt.bar(yPos, results, align="center", alpha=0.5)
 plt.xticks(yPos, labels)
 plt.ylabel("Distance")
-t = "2-1:v-d Distance from cue word | " + str(iterations) + " Iterations"
+t = rTxt + " | Distance from cue word | " + str(iterations) + " Iterations"
 plt.title(t)
+p = "figures/biased2/" + rTxt + "_dist_10000_itr5.png"
+plt.savefig(p)
 plt.show()
 
 # training time plt
