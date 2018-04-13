@@ -20,6 +20,14 @@ import gensim
 #4 sims:  2d1v; 1v2d; 2v1d; 1d2v
 # 2
 
+# simulation parameters
+#order = 0 # Determines the order of sentenses 1:Db4V 0:Vb4D
+shuff = True # For random condition
+iterations = 10000 # 10k~15m; 1k~1.5m
+#2d1v; 1v2d; 2v1d; 1d2v
+comb = 2
+print("\nWord2Vec Catastrophic Forgeting Analysis.")
+
 # Grab the data
 os.chdir("corpus")
 print(os.getcwd())
@@ -27,12 +35,6 @@ d1 = open("artLang_2s_1-2Bias_v-d_8x1000_shuffled.txt").read().splitlines()
 d2 = open("artLang_2s_2-1Bias_v-d_8x1000_shuffled.txt").read().splitlines()
 os.chdir("..")
 
-# simulation parameters
-#order = 0 # Determines the order of sentenses 1:Db4V 0:Vb4D
-shuff = False # For random condition
-iterations = 10000 # 10k~15m; 1k~1.5m
-#2d1v; 1v2d; 2v1d; 1d2v
-comb = 2
 
 def returnVectors(model, vocab):
     vectorDict = {}
@@ -64,6 +66,9 @@ elif comb == 4:
 else:
     print("Error")
 
+if shuff:
+    rTxt = rTxt + "-Rand"
+print("Running", rTxt)
 
 
 
@@ -105,7 +110,7 @@ for s in tenses:
 
 # Train the W2V model!
 vectorDic = defaultdict(dict)
-print("Training the Model...")
+print("\nTraining the Model...")
 trainingTime = []
 start = time.time()
 for i in range(0, iterations):
@@ -136,10 +141,10 @@ for i in range(0, iterations):
 
 
 # Compute final measurements
-print("\nResults:")
+print("\nRESULTS:")
 df = pd.DataFrame(cosDic).T
 
-# Are these distances?
+# Are these distances - yes
 df["Vehicles"] = (df["car"] + df["truck"])/2
 df["Dinnerware"] = (df["glass"] + df["plate"])/2
 
@@ -163,7 +168,7 @@ df.to_csv(name)
 
 
 
-#plotting results
+#plotting binary rank results
 print("Plotting results")
 c2v = sum(df["closer2vehicles"])
 c2d = sum(df["closer2dinnerware"])
@@ -171,19 +176,20 @@ print("c2v:", c2v,"c2d:", c2d)
 labels = ("c2Vehicles", "c2Dinnerware")
 yPos = np.arange(len(labels))
 results = [c2v, c2d]
- 
+
+plt.figure(1)
 plt.bar(yPos, results, align="center", alpha=0.5)
 plt.xticks(yPos, labels)
 plt.ylabel("Iterations")
 t = rTxt + "_Binary Rank | " + str(iterations) + " Iterations"
 plt.title(t)
-p = "figures/biased2/" + rTxt + "_br_10000_itr5.png"
+p = "figures/biased3/br/" + rTxt + "_br_10000_itr5.png"
 plt.savefig(p)
-plt.show()
+#plt.show()
 
 
 
-# 
+# plotting distance results
 distVeh = df["Vehicles"]
 distDish = df["Dinnerware"]
 distVehMean = np.mean(distVeh)
@@ -192,15 +198,17 @@ distDishMean = np.mean(distDish)
 labels = ("Vehicles", "Dinnerware")
 yPos = np.arange(len(labels))
 results = [distVehMean, distDishMean]
- 
+print("VehMean:", distVehMean, "DishMean:", distDishMean)
+
+plt.figure(2)
 plt.bar(yPos, results, align="center", alpha=0.5)
 plt.xticks(yPos, labels)
 plt.ylabel("Distance")
 t = rTxt + " | Distance from cue word | " + str(iterations) + " Iterations"
 plt.title(t)
-p = "figures/biased2/" + rTxt + "_dist_10000_itr5.png"
+p = "figures/biased3/dist/" + rTxt + "_dist_10000_itr5.png"
 plt.savefig(p)
-plt.show()
+#plt.show()
 
 # training time plt
 ##plt.plot(trainingTime)
