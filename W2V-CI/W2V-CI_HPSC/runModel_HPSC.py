@@ -16,6 +16,8 @@ import gensim
 #   remove figures
 #   add logging dataframe
 
+print("\nW2V-CI HPSC Model")
+
 # Grab the data
 os.chdir("corpus")
 print(os.getcwd())
@@ -31,7 +33,6 @@ iterations = 10000 # 10k~15m; 1k~1.5m
 def returnVectors(model, vocab):
     vectorDict = {}
     for v in vocab:
-        print(model)
         vectorDict[v] = model.wv[v]
     return vectorDict
 
