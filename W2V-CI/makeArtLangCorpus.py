@@ -30,7 +30,7 @@ dishList = ['man break plate',
 
 # multiply the sentences
 # (keep them seperated if we want to do something later)
-numS = 1000
+numS = 500
 vehCorpus = []
 dishCorpus = []
 
@@ -52,7 +52,7 @@ print(len(artLangShuffled), 'total sentenses')
 # save the shuffled data to a txt file
 print('Writing artificial corpus...')
 os.chdir('corpus')
-t = 'artLang-16000_1k-8s-2t_hom.txt'
+t = 'artLang-' + str(len(artLangShuffled)) + '_' + str(numS)+ '-8s-2t_hom.txt'
 print('Saved to', t)
 with open(t, mode='wt', encoding='utf-8') as f:
         f.write('\n'.join(artLangShuffled))

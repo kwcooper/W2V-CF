@@ -9,17 +9,19 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cosine
+from sklearn.metrics.pairwise import cosine_similarity
 
 import gensim
 
 # td
 #   add functions for this and model training
 #   add logging dataframe
+#   mds Plot
 
 # Grab the data
 os.chdir("corpus")
 print(os.getcwd())
-data = open("Artificial_corpus_2_senses_6000.txt").read().splitlines()
+data = open("artLang-8000_500k-8s-2t_hom.txt").read().splitlines()
 os.chdir("..")
 
 # simulation parameters
@@ -60,19 +62,11 @@ else:
     oTxt = "V b4 D |"
 
 
-print('senVeh', senVeh[1:5])
-print('senD', senDish[1:5])
-
-
 #test the random assignment
-randomList = np.random.randint(0, len(senVeh), int(len(senDish)/2))
-tenses = senDish + list(np.array(senVeh)[randomList])
+##randomList = np.random.randint(0, len(senVeh), int(len(senDish)/2))
+##tenses = senDish + list(np.array(senVeh)[randomList])
 
 
-print('senVeh', senVeh[1:5])
-print('senD', senDish[1:5])
-
-print('\ntenses', tenses[1:10])
 # break the sentences up into lists of words
 sentences = []
 for s in tenses:
@@ -108,40 +102,35 @@ print("Time:", (time.time() - start)/60, "minutes")
 
 # Now let"s compute the distances to the queryWord
 full = copy.deepcopy(vectorDic)
-queryWord=  "break"
-checkWord = ["car", "truck", "glass", "plate"]
+queryWord = "break"
+checkWord = ["stop", "smash"]
 cosDic = defaultdict(dict)
 for i in range(0, iterations):
     first = full[i]
     for word in checkWord:
-        cosDic[i][word] = cosine(first[queryWord], first[word])
-
-#
-
-# mds Plot
+ #       cosDic[i][word] = cosine(first[queryWord], first[word])
+        cosDic[i][word] = cosine_similarity(first[queryWord], first[word])
+        
 
 
 # Compute final measurements
 print("\nResults:")
 df = pd.DataFrame(cosDic).T
 
-# Are these distances?
-df["Vehicles"] = (df["car"] + df["truck"])/2
-df["Dinnerware"] = (df["glass"] + df["plate"])/2
+# calculate the distance
+df["Vehicles"] = df["stop"]
+df["Dinnerware"] = df["smash"]
 
 # for how many is the distance greater
-df["closer2vehicles"] = (df["Vehicles"] < df["Dinnerware"])
-df["closer2dinnerware"] = (df["Dinnerware"] < df["Vehicles"])
+df["closer2vehicles"] = (df["stop"] < df["smash"])
+df["closer2dinnerware"] = (df["smash"] < df["stop"])
 
 # Display results
 print("Vehicles Occuring First: " + str(sum(df["closer2vehicles"])))
 print("Dinnerware Occuring First: " + str(sum(df["closer2dinnerware"])))
-print("Proportion of Vehicles Occuring First: " + str(sum(df["closer2vehicles"])/float(iterations)))
-print("Proportion of Dinnerware Occuring First: " + str(sum(df["closer2dinnerware"])/float(iterations)))
 
 c2v = sum(df["closer2vehicles"])/float(iterations)
 c2d = sum(df["closer2dinnerware"])/float(iterations)
-print("v to d Ratio:", c2v/c2d)
 
 name = "results/VehicleDinnerware_2iter_" + str(iterations) + "runs.csv"
 print("\nSaving to", name)
@@ -149,7 +138,7 @@ df.to_csv(name)
 
 
 
-#plotting results
+# Binary Rank 
 print("Plotting results")
 c2v = sum(df["closer2vehicles"])
 c2d = sum(df["closer2dinnerware"])
