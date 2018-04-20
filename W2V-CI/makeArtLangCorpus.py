@@ -11,14 +11,24 @@ df = DataFrame(data = d)
 vehList = ['man break car',
            'woman break car',
            'man break truck',
-           'woman break truck']
+           'woman break truck',
+           'man stop car',
+           'woman stop car',
+           'man stop truck',
+           'woman stop truck']
 
 dishList = ['man break plate',
             'woman break plate',
             'man break glass',
-            'woman break glass']
+            'woman break glass',
+            'man smash plate',
+            'woman smash plate',
+            'man smash plate',
+            'woman smash plate']
 
-# multiply the setences
+
+
+# multiply the sentences
 # (keep them seperated if we want to do something later)
 numS = 1000
 vehCorpus = []
@@ -38,9 +48,11 @@ dishFlat = [i for sL in dishCorpus for i in sL]
 artLang = vehFlat + dishFlat
 artLangShuffled = random.sample(artLang, len(artLang))
 
-
+print(len(artLangShuffled), 'total sentenses')
 # save the shuffled data to a txt file
 print('Writing artificial corpus...')
 os.chdir('corpus')
-with open('artLang_2s_8x1000_shuffled.txt', mode='wt', encoding='utf-8') as f:
+t = 'artLang-16000_1k-8s-2t_hom.txt'
+print('Saved to', t)
+with open(t, mode='wt', encoding='utf-8') as f:
         f.write('\n'.join(artLangShuffled))

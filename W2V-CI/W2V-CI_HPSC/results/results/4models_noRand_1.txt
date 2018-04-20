@@ -1,0 +1,105 @@
+
+Word2Vec Catastrophic Forgeting Analysis
+/gpfs/home/k/c/kc42/Karst/W2V-CI_HPSC/corpus
+Running 2d1v
+Running D b4 V
+
+Training the Model...
+iteration:  0
+iteration:  1000
+iteration:  2000
+iteration:  3000
+iteration:  4000
+iteration:  5000
+iteration:  6000
+iteration:  7000
+iteration:  8000
+iteration:  9000
+Time: 13.026950804392497 minutes
+
+RESULTS:
+Vehicles Occuring First: 5818
+Dinnerware Occuring First: 4182
+v to d Ratio: 1.39120038259
+
+Saving to results/biased/2d1v_10000runs.csv
+Binary Rank: c2v: 5818 c2d: 4182
+Distance: VehMean: 0.00261580631185 DishMean: 0.00274945625963
+/gpfs/home/k/c/kc42/Karst/W2V-CI_HPSC/corpus
+Running 1v2d
+Running V b4 D
+
+Training the Model...
+iteration:  0
+iteration:  1000
+iteration:  2000
+iteration:  3000
+iteration:  4000
+iteration:  5000
+iteration:  6000
+iteration:  7000
+iteration:  8000
+iteration:  9000
+Time: 13.034493172168732 minutes
+
+RESULTS:
+Vehicles Occuring First: 2074
+Dinnerware Occuring First: 7926
+v to d Ratio: 0.261670451678
+
+Saving to results/biased/1v2d_10000runs.csv
+Binary Rank: c2v: 2074 c2d: 7926
+Distance: VehMean: 0.002639991691 DishMean: 0.00217456102309
+/gpfs/home/k/c/kc42/Karst/W2V-CI_HPSC/corpus
+Running 2v1d
+Running V b4 D
+
+Training the Model...
+iteration:  0
+iteration:  1000
+iteration:  2000
+iteration:  3000
+iteration:  4000
+iteration:  5000
+iteration:  6000
+iteration:  7000
+iteration:  8000
+iteration:  9000
+Time: 13.120393900076548 minutes
+
+RESULTS:
+Vehicles Occuring First: 4183
+Dinnerware Occuring First: 5817
+v to d Ratio: 0.719099192023
+
+Saving to results/biased/2v1d_10000runs.csv
+Binary Rank: c2v: 4183 c2d: 5817
+Distance: VehMean: 0.00275445074234 DishMean: 0.00261674070483
+/gpfs/home/k/c/kc42/Karst/W2V-CI_HPSC/corpus
+Running 1d2v
+Running D b4 V
+
+Training the Model...
+iteration:  0
+iteration:  1000
+iteration:  2000
+iteration:  3000
+iteration:  4000
+iteration:  5000
+iteration:  6000
+iteration:  7000
+iteration:  8000
+iteration:  9000
+Time: 13.081627802054088 minutes
+
+RESULTS:
+Vehicles Occuring First: 7948
+Dinnerware Occuring First: 2052
+v to d Ratio: 3.87329434698
+
+Saving to results/biased/1d2v_10000runs.csv
+Binary Rank: c2v: 7948 c2d: 2052
+Distance: VehMean: 0.00217783532481 DishMean: 0.00264146088237
+
+fin
+[['2d1v', {'br_c2v-c2d': [5818, 4182], 'dist_vM-dM': [0.0026158063118450693, 0.0027494562596282282]}], ['1v2d', {'br_c2v-c2d': [2074, 7926], 'dist_vM-dM': [0.0026399916910024926, 0.002174561023089076]}], ['2v1d', {'br_c2v-c2d': [4183, 5817], 'dist_vM-dM': [0.0027544507423417439, 0.002616740704831286]}], ['1d2v', {'br_c2v-c2d': [7948, 2052], 'dist_vM-dM': [0.002177835324809843, 0.0026414608823697714]}]]
