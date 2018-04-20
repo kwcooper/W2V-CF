@@ -12,6 +12,8 @@ from scipy.spatial.distance import cosine
 from sklearn.metrics.pairwise import cosine_similarity
 
 import gensim
+from gensim.test.utils import common_corpus, common_dictionary
+from gensim.similarities import MatrixSimilarity
 
 # td
 #   add functions for this and model training
@@ -21,13 +23,13 @@ import gensim
 # Grab the data
 os.chdir("corpus")
 print(os.getcwd())
-data = open("artLang-8000_500k-8s-2t_hom.txt").read().splitlines()
+data = open("artLang-8000_1000-8s-1t_hom.txt").read().splitlines()
 os.chdir("..")
 
 # simulation parameters
 order = 1 # Determines the order of sentenses 1:Db4V 0:Vb4D
 shuff = False # For random condition
-iterations = 5000 # 10k~15m; 1k~1.5m
+iterations = 100 # 10k~15m; 1k~1.5m
 
 
 def returnVectors(model, vocab):
@@ -35,6 +37,20 @@ def returnVectors(model, vocab):
     for v in vocab:
         vectorDict[v] = model.wv[v]
     return vectorDict
+
+def getSimilarityMatrix(model, vocab):
+    print(gensim.similarities)
+    SM = np.zeros((len(vocab), len(vocab)))
+    for i in range(len(vocab)):
+        for j in range(len(vocab)):
+            SM[i,j] = model.wv.similarity(vocab[i],vocab[j])
+    return SM
+            
+
+def getSimilarityMatrix2(model, vocab):
+    SM = MatrixSimilarity(common_corpus, num_features=len(common_dictionary))
+    print(SM[[(1, 2), (5, 4)]])
+    
 
 def saveVectors(vector_dict, i):
     filename = open("vectors/veh-dish_vectors_" +str(i) + ".pkl", "wb")
@@ -78,13 +94,15 @@ for s in tenses:
     for si in s.split():
         if si not in vocab:
             vocab.append(si)
-   
+print('vocab:', vocab)
 
 # Train the W2V model!
 vectorDic = defaultdict(dict)
 print("Training the Model...")
 trainingTime = []
+SML = []
 start = time.time()
+itr = 3
 for i in range(0, iterations):
     if shuff:
         np.random.shuffle(sentences)
@@ -93,13 +111,28 @@ for i in range(0, iterations):
         print("iteration: ", i)
     #reduce  iter to test overfitting?
     # uses skipgram, 300 dimensions, max dist 2, 5 iterations, seed changes
-    model = gensim.models.Word2Vec(sentences, sg=1, size=300, window=2, iter=2, seed=i)
+    model = gensim.models.Word2Vec(sentences, sg=0, size=300, window=2, iter=itr, seed=i)
     vectors = returnVectors(model, vocab)
+    #print(i)
+    #SML.append(getSimilarityMatrix(model, vocab))
     vectorDic[i] = vectors
     trainingTime.append((time.time()-start))
     
 print("Time:", (time.time() - start)/60, "minutes")
 
+
+from collections import defaultdict
+simMat = defaultdict(dict) # a dictionary of dictionaries
+for v in vectors:
+    for ve in vectors:
+        simMat[v][ve] = model.wv.similarity(v,ve)
+
+dframe = pd.DataFrame(simMat)
+t = "SM_Vehicles_itr" + str(itr) + "_it" + str(iterations) + ".csv"
+dframe.to_csv(t)
+print("saved", t)
+
+input()
 # Now let"s compute the distances to the queryWord
 full = copy.deepcopy(vectorDic)
 queryWord = "break"
@@ -108,9 +141,12 @@ cosDic = defaultdict(dict)
 for i in range(0, iterations):
     first = full[i]
     for word in checkWord:
- #       cosDic[i][word] = cosine(first[queryWord], first[word])
-        cosDic[i][word] = cosine_similarity(first[queryWord], first[word])
+       cosDic[i][word] = cosine(first[queryWord], first[word])
+        #cosDic[i][word] = cosine_similarity(first[queryWord], first[word])
         
+#SMA = np.mean(np.array([ old_set, new_set ]), axis=0 )
+
+
 
 
 # Compute final measurements
