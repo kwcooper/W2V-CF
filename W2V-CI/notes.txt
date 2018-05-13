@@ -1,0 +1,20 @@
+Jamison et al. 
+
+
+
+New word corpus:
+Fish bass
+Eat bass
+Fish trout
+Eat trout
+
+Play bass
+Pluck bass
+Play guitar
+Pluck gutar
+
+
+cbow instead of skipgram
+
+Switches the order …. 
+

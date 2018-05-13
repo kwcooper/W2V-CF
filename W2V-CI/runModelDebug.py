@@ -40,16 +40,23 @@ def returnVectors(model, vocab):
 
 def getSimilarityMatrix(model, vocab):
     print(gensim.similarities)
+    #SM = MatrixSimilarity(common_corpus, num_features=len(common_dictionary))
     SM = np.zeros((len(vocab), len(vocab)))
     for i in range(len(vocab)):
         for j in range(len(vocab)):
             SM[i,j] = model.wv.similarity(vocab[i],vocab[j])
     return SM
-            
 
-def getSimilarityMatrix2(model, vocab):
-    SM = MatrixSimilarity(common_corpus, num_features=len(common_dictionary))
-    print(SM[[(1, 2), (5, 4)]])
+def makeSimMat(model, vectors, itr, iterations):
+    simMat = defaultdict(dict) # a dictionary of dictionaries
+    for v in vectors:
+        for ve in vectors:
+            simMat[v][ve] = model.wv.similarity(v,ve)
+
+    dframe = pd.DataFrame(simMat)
+    t = "SM_Vehicles_itr" + str(itr) + "_it" + str(iterations) + ".csv"
+    dframe.to_csv(t)
+    print("saved", t)
     
 
 def saveVectors(vector_dict, i):
@@ -102,7 +109,7 @@ print("Training the Model...")
 trainingTime = []
 SML = []
 start = time.time()
-itr = 3
+itr = 5
 for i in range(0, iterations):
     if shuff:
         np.random.shuffle(sentences)
@@ -121,16 +128,7 @@ for i in range(0, iterations):
 print("Time:", (time.time() - start)/60, "minutes")
 
 
-from collections import defaultdict
-simMat = defaultdict(dict) # a dictionary of dictionaries
-for v in vectors:
-    for ve in vectors:
-        simMat[v][ve] = model.wv.similarity(v,ve)
-
-dframe = pd.DataFrame(simMat)
-t = "SM_Vehicles_itr" + str(itr) + "_it" + str(iterations) + ".csv"
-dframe.to_csv(t)
-print("saved", t)
+makeSimMat(model, vectors, itr, iterations)
 
 input()
 # Now let"s compute the distances to the queryWord
@@ -144,7 +142,7 @@ for i in range(0, iterations):
        cosDic[i][word] = cosine(first[queryWord], first[word])
         #cosDic[i][word] = cosine_similarity(first[queryWord], first[word])
         
-#SMA = np.mean(np.array([ old_set, new_set ]), axis=0 )
+#SMA = np.mean(np.array([ old_set, new_set ]), axis=0)
 
 
 

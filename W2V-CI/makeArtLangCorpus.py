@@ -45,14 +45,14 @@ vehFlat = [i for sL in vehCorpus for i in sL]
 dishFlat = [i for sL in dishCorpus for i in sL]
 
 # now combine them to make the corpus
-artLang = vehFlat #+ dishFlat
+artLang = dishFlat #+ vehFlat
 artLangShuffled = random.sample(artLang, len(artLang))
 
 print(len(artLangShuffled), 'total sentenses')
 # save the shuffled data to a txt file
 print('Writing artificial corpus...')
 os.chdir('corpus')
-t = 'artLang-' + str(len(artLangShuffled)) + '_' + str(numS)+ '-8s-1t_hom.txt'
+t = 'artLangDish-' + str(len(artLangShuffled)) + '_' + str(numS)+ '-8s-1t_hom.txt'
 print('Saved to', t)
 with open(t, mode='wt', encoding='utf-8') as f:
         f.write('\n'.join(artLangShuffled))
