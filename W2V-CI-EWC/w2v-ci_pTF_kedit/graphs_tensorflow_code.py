@@ -43,22 +43,33 @@ np.random.shuffle(instrument_sense)
 #generate_corpus = fish_sense + instrument_sense
 #np.random.shuffle(generate_corpus)
 
+# Grab indicies
 vocab = ['bass', 'guitar', 'acoustic', 'trout', 'fish']
 word_to_index, index_to_word = {}, {}
 for v in range(0, len(vocab)):
     word_to_index[vocab[v]] = v
     index_to_word[v] = vocab[v]
-    
-tot_dict, sim_dict1 = defaultdict(dict), defaultdict(dict)
 
+print()
+print('word_to_index')
+print(word_to_index)
+print('index_to_word')
+print(index_to_word)
+
+
+# Define similarity matrix
+tot_dict, sim_dict1 = defaultdict(dict), defaultdict(dict)
 for v in vocab:
     for ve in vocab:
         tot_dict[v][ve] = 0.
 #        sim_dict1[v][ve] = 0.
+print('/ntot_dict')
+print(tot_dict)
 
 tot_bass_trout = []
 tot_bass_acoustic = []
 
+# define network
 num_runs = 5
 embedding_size = 10
 for i in range(0, num_runs):
@@ -136,6 +147,8 @@ for i in range(0, num_runs):
 mean_bass_trout = np.mean(tot_bass_trout, axis = 0)
 mean_bass_acoustic = np.mean(tot_bass_acoustic, axis = 0)
 
+# Need to sort through all this.
+# add legend to plots.
 plt.figure(figsize = (25, 15))
 plt.xlabel('Samples')
 plt.ylabel('Cosine')
