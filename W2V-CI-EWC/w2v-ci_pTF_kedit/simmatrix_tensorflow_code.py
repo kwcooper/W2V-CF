@@ -91,14 +91,14 @@ for i in range(0, num_runs):
 
 
     # reset graph at every run
-    print (i)
+    print(i)
     tf.reset_default_graph()
     
     # embedding matrix
-    embeddings = tf.Variable(tf.random_uniform([len(vocab), embedding_size], -1.0, 1.0, seed = i))
+    embeddings = tf.Variable(tf.random_uniform([len(vocab), embedding_size], -1.0, 1.0, seed=i))
     
     # weight matrix
-    nce_weights = tf.Variable(tf.truncated_normal([len(vocab), embedding_size], stddev = 1.0/np.sqrt(embedding_size), seed = i))
+    nce_weights = tf.Variable(tf.truncated_normal([len(vocab), embedding_size], stddev=1.0/np.sqrt(embedding_size), seed=i))
     nce_biases = tf.Variable(tf.zeros([len(vocab)]))
     
     # input and output placeholders

@@ -50,12 +50,6 @@ for v in range(0, len(vocab)):
     word_to_index[vocab[v]] = v
     index_to_word[v] = vocab[v]
 
-print()
-print('word_to_index')
-print(word_to_index)
-print('index_to_word')
-print(index_to_word)
-
 
 # Define similarity matrix
 tot_dict, sim_dict1 = defaultdict(dict), defaultdict(dict)
@@ -63,7 +57,7 @@ for v in vocab:
     for ve in vocab:
         tot_dict[v][ve] = 0.
 #        sim_dict1[v][ve] = 0.
-print('/ntot_dict')
+print('\ntot_dict')
 print(tot_dict)
 
 tot_bass_trout = []
@@ -72,30 +66,31 @@ tot_bass_acoustic = []
 # define network
 num_runs = 5
 embedding_size = 10
+print("Embeddings size = {}x{}".format(len(vocab), embedding_size))
+
 for i in range(0, num_runs):
-    print (i)
-    tf.reset_default_graph()
-    embeddings = tf.Variable(tf.random_uniform([len(vocab), embedding_size], -1.0, 1.0))
+    print('Run {}...'.format(i))
     
-    nce_weights = tf.Variable(tf.truncated_normal([len(vocab), embedding_size], stddev = 1.0/np.sqrt(embedding_size)))
+    tf.reset_default_graph() 
+    embeddings = tf.Variable(tf.random_uniform([len(vocab), embedding_size], -1.0, 1.0)) # 5 X 10
+    
+    nce_weights = tf.Variable(tf.truncated_normal([len(vocab), embedding_size], stddev=1.0/np.sqrt(embedding_size)))
     nce_biases = tf.Variable(tf.zeros([5]))
     
-    train_inputs = tf.placeholder(tf.int32, shape = [1])
-    train_labels = tf.placeholder(tf.int32, shape = [1, 1])
+    train_inputs = tf.placeholder(tf.int32, shape=[1])
+    train_labels = tf.placeholder(tf.int32, shape=[1,1])
     
     embed = tf.nn.embedding_lookup(embeddings, train_inputs)
     #out_embed = tf.nn.embedding_lookup(nce_weights, train_inputs)
     
-    loss = tf.reduce_mean(
-            tf.nn.nce_loss(weights= nce_weights,
-                           biases= nce_biases,
-                           labels = train_labels,
-                           inputs = embed,
-                           num_sampled= 1,
-                           num_classes= len(vocab))
-            )
+    loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
+                           biases=nce_biases,
+                           labels=train_labels,
+                           inputs=embed,
+                           num_sampled=1,
+                           num_classes=len(vocab)))
     
-    optimizer = tf.train.AdamOptimizer(learning_rate = 0.02).minimize(loss)
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.02).minimize(loss)
     #optimizer = tf.train.GradientDescentOptimizer(learning_rate=1.0).minimize(loss)
     
 #    np.random.shuffle(total_corpus)
