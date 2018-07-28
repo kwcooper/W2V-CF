@@ -7,10 +7,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 import matplotlib.pyplot as plt
 #matplotlib auto
-import gensim
+#import gensim
+import time
 
 
-n_sent_reps = 10
+n_sent_reps = 1000
 
 # list of 4 sentences
 corpus = ['bass fish', 'trout fish', 'bass guitar', 'acoustic guitar']
@@ -63,12 +64,11 @@ for v in vocab:
 
 tot_bass_trout = []
 tot_bass_acoustic = []
-
+start = time.Time()
 # define network
 num_runs = 5
 embedding_size = 10
 print("Embeddings size = {}x{}".format(len(vocab), embedding_size))
-
 print('Run ', end="")
 for i in range(0, num_runs):
     print('{}...'.format(i+1), end=" ")
@@ -114,6 +114,8 @@ for i in range(0, num_runs):
     #generate_corpus = instrument_sense + fish_sense
     #np.random.shuffle(generate_corpus)
 
+
+
     # generate input and output lists of vocab
     input_feed, output_feed = [], []
     for c in generate_corpus:
@@ -123,6 +125,8 @@ for i in range(0, num_runs):
         output_feed.append(word_to_index[splitted[1]])
     input_feed = np.array(input_feed)
     output_feed = np.reshape(np.array(output_feed), (len(output_feed), 1))
+
+
     
     sim_dict = defaultdict(dict)
     sess = tf.Session()
@@ -146,13 +150,14 @@ for i in range(0, num_runs):
         bass_guitar_loss.append(sim_dict['bass']['acoustic'])
     tot_bass_trout.append(bass_fish_loss)
     tot_bass_acoustic.append(bass_guitar_loss)
-        
+
+print('Took {} seconds'.format((start-time.Time())/60)
 mean_bass_trout = np.mean(tot_bass_trout, axis=0)
 mean_bass_acoustic = np.mean(tot_bass_acoustic, axis=0)
 
 # Need to sort through all this.
 # add legend to plots.
-print('Plotting and saving figs...')
+print('\nPlotting and saving figs...')
 plt.figure(figsize =(25, 15))
 plt.xlabel('Samples')
 plt.ylabel('Cosine')

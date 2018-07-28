@@ -1,7 +1,8 @@
 import tensorflow as tf
 import numpy as np
-from copy import deepcopy
 import matplotlib.pyplot as plt
+from copy import deepcopy
+import time
 
 # variable initialization functions
 def weight_variable(shape):
