@@ -33,18 +33,25 @@ instrument_sense = bass_guitar + diff_sentences[int(len(diff_sentences)/2):]
 #instrument_sense = bass_guitar + acoustic_guitar
 
 #* shuffle the sentences in each sense
-#np.random.shuffle(fish_sense)
-#np.random.shuffle(instrument_sense)
+np.random.shuffle(fish_sense)
+np.random.shuffle(instrument_sense)
 
-# add fish + instrument for FI ordering
-generate_corpus = fish_sense + instrument_sense
+# Determine sentense ordering
+switch = 1
 
-# add instrument + fish for IF ordering
-#generate_corpus = instrument_sense + fish_sense
-
-# random ordering
-#generate_corpus = fish_sense + instrument_sense
-#np.random.shuffle(generate_corpus)
+if switch == 1:
+    # add fish + instrument for FI ordering
+    generate_corpus = fish_sense + instrument_sense
+    print('Order: FI')
+elif switch == 2:
+    # add instrument + fish for IF ordering
+    generate_corpus = instrument_sense + fish_sense
+    print('Order: IF')
+else:
+    # random ordering
+    generate_corpus = fish_sense + instrument_sense
+    np.random.shuffle(generate_corpus)
+    print('Order: RAND')
 
 # Grab indicies
 vocab = ['bass', 'guitar', 'acoustic', 'trout', 'fish']
@@ -64,7 +71,7 @@ for v in vocab:
 
 tot_bass_trout = []
 tot_bass_acoustic = []
-start = time.Time()
+start = time.time()
 # define network
 num_runs = 5
 embedding_size = 10
@@ -108,7 +115,7 @@ for i in range(0, num_runs):
     #generate_corpus = instrument_sense + fish_sense
     
     # add instrument + fish for IF ordering
-    generate_corpus = instrument_sense + fish_sense
+    #generate_corpus = instrument_sense + fish_sense
 
     # random ordering
     #generate_corpus = instrument_sense + fish_sense
@@ -125,9 +132,8 @@ for i in range(0, num_runs):
         output_feed.append(word_to_index[splitted[1]])
     input_feed = np.array(input_feed)
     output_feed = np.reshape(np.array(output_feed), (len(output_feed), 1))
-
-
     
+    # Run the model
     sim_dict = defaultdict(dict)
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -151,25 +157,30 @@ for i in range(0, num_runs):
     tot_bass_trout.append(bass_fish_loss)
     tot_bass_acoustic.append(bass_guitar_loss)
 
-print('Took {} seconds'.format((start-time.Time())/60)
+print('Took {} seconds'.format((start-time.time())))
 mean_bass_trout = np.mean(tot_bass_trout, axis=0)
 mean_bass_acoustic = np.mean(tot_bass_acoustic, axis=0)
 
-# Need to sort through all this.
+# PLOTTING
 # add legend to plots.
 print('\nPlotting and saving figs...')
-plt.figure(figsize =(25, 15))
+plt.figure(figsize=(25, 15))
 plt.xlabel('Samples')
 plt.ylabel('Cosine')
-plt.ylim(0, 1)
-#plt.title('Random Ordering: Average of 5 Runs - 1000 Samples Each \n GREEN: Cosine between bass and acoustic (Guitar sense) \n RED: Cosine between bass and trout (Fish sense)')
-#plt.title('IF Ordering: Average of 5 Runs - 1000 Samples Each \n GREEN: Cosine between bass and acoustic (Guitar sense) \n RED: Cosine between bass and trout (Fish sense)')
-#plt.title('FI Ordering: Average of 5 Runs - 1000 Samples Each \n GREEN: Cosine between bass and acoustic (Guitar sense) \n RED: Cosine between bass and trout (Fish sense)')
+plt.ylim(0, 1)   
 plt.scatter(np.arange(0, len(mean_bass_trout), 1), mean_bass_trout, color='red')
 plt.scatter(np.arange(0, len(mean_bass_acoustic), 1), mean_bass_acoustic, color='green')
-plt.savefig('Random_1000samp_adam.png', dpi=300)    
-plt.savefig('IF_1000samp_adam.png', dpi=300)    
-plt.savefig('FI_1000samp_adam.png', dpi=300)
+if switch == 1:
+    plt.title('FI Ordering: Average of 5 Runs - 1000 Samples Each \n GREEN: Cosine between bass and acoustic (Guitar sense) \n RED: Cosine between bass and trout (Fish sense)')
+    plt.savefig('FI_1000samp_adam.png', dpi=300)
+elif switch == 2:
+    plt.title('IF Ordering: Average of 5 Runs - 1000 Samples Each \n GREEN: Cosine between bass and acoustic (Guitar sense) \n RED: Cosine between bass and trout (Fish sense)')
+    plt.savefig('IF_1000samp_adam.png', dpi=300)    
+else:
+    plt.title('Random Ordering: Average of 5 Runs - 1000 Samples Each \n GREEN: Cosine between bass and acoustic (Guitar sense) \n RED: Cosine between bass and trout (Fish sense)')
+    plt.savefig('Random_1000samp_adam.png', dpi=300)    
+
+
 
 print('\nfin')
 
