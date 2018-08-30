@@ -22,11 +22,20 @@ class Model:
         self.x = x # input placeholder
 
         # simple 2-layer network ~ 50 neurons?
-        W1 = weight_variable([in_dim,50])
-        b1 = bias_variable([50])
+##        W1 = weight_variable([in_dim,50])
+##        b1 = bias_variable([50])
+##
+##        W2 = weight_variable([50,out_dim])
+##        b2 = bias_variable([out_dim])
+##
+##        h1 = tf.nn.relu(tf.matmul(x,W1) + b1) # hidden layer
+##        self.y = tf.matmul(h1,W2) + b2 # output layer
+##
+##        self.var_list = [W1, b1, W2, b2]
 
-        W2 = weight_variable([50,out_dim])
-        b2 = bias_variable([out_dim])
+        # in_dim = len(vocab) ~ 5
+        W1 = weight_variable([in_dim,embedding_size])
+        b1 = bias_variable([embedding_size])
 
         h1 = tf.nn.relu(tf.matmul(x,W1) + b1) # hidden layer
         self.y = tf.matmul(h1,W2) + b2 # output layer

@@ -10,6 +10,16 @@ import matplotlib.image as mpimg
 
 from model import Model
 
+import vocabFunctions as vp
+
+print('Initializing EWC Model...')
+# list of 4 sentences
+corpus = ['bass fish', 'trout fish', 'bass guitar', 'acoustic guitar']
+    
+# Grab the corpus data
+# FI = 1, IF = 2, RAND = ~3
+input_feed, output_feed, generate_corpus, word_to_index, index_to_word, vocab = vp.generateCorpus(corpus, 1000, 1)
+
 
 # TD
 # use alternatives such as official/mnist/dataset.py from tensorflow/models
@@ -77,7 +87,7 @@ def train_task(model, num_iter, disp_freq, trainset, testsets, x, y_, lams=[0]):
 
 
 
-mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+#mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 #mnist = tf.keras.datasets.mnist
 
 sess = tf.InteractiveSession()
@@ -99,8 +109,9 @@ sess.run(tf.global_variables_initializer())
 print("\nFirst Task:")
 
 # training 1st task
+# train_task(model, num_iter, disp_freq, trainset, testsets, x, y_, lams=[0]):
 print("Training network...")
-train_task(model, 800, 20, mnist, [mnist], x, y_, lams=[0])
+train_task(model, 5, 1, input_feed, output_feed, x, y_, lams=[0])
 
 # Fisher information
 print("\nComputing Fisher information...")
