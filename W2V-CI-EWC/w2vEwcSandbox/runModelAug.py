@@ -1,5 +1,6 @@
 # code to run the EWC model
 
+print('Importing Libraries...')
 import tensorflow as tf
 import numpy as np
 from copy import deepcopy
@@ -8,7 +9,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-from model import Model
+from modelAug import Model
 
 import vocabFunctions as vp
 
@@ -106,22 +107,22 @@ model = Model(x, y_) # simple 2-layer network
 # initialize variables
 sess.run(tf.global_variables_initializer())
 
-print("\nFirst Task:")
-
-# training 1st task
-# train_task(model, num_iter, disp_freq, trainset, testsets, x, y_, lams=[0]):
-print("Training network...")
-train_task(model, 5, 1, input_feed, output_feed, x, y_, lams=[0])
-
-# Fisher information
-print("\nComputing Fisher information...")
-model.compute_fisher(mnist.validation.images, sess, num_samples=200, plot_diffs=True) # use validation set for Fisher computation
-F_row_mean = np.mean(model.F_accum[0], 1)
-mnist_imshow(F_row_mean)
-plt.title("W1 row-wise mean Fisher");
-
-# save current optimal weights
-model.star()
+##print("\nFirst Task:")
+##
+### training 1st task
+### train_task(model, num_iter, disp_freq, trainset, testsets, x, y_, lams=[0]):
+##print("Training network...")
+##train_task(model, 5, 1, input_feed, output_feed, x, y_, lams=[0])
+##
+### Fisher information
+##print("\nComputing Fisher information...")
+##model.compute_fisher(mnist.validation.images, sess, num_samples=200, plot_diffs=True) # use validation set for Fisher computation
+##F_row_mean = np.mean(model.F_accum[0], 1)
+##mnist_imshow(F_row_mean)
+##plt.title("W1 row-wise mean Fisher");
+##
+### save current optimal weights
+##model.star()
 
 print("\nSecond Task:")
 # permuting mnist for 2nd task

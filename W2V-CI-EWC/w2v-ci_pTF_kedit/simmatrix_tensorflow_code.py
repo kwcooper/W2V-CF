@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 14 12:05:30 2018
-
-@author: prudh
-"""
-
 import tensorflow as tf
 import numpy as np
 from collections import defaultdict

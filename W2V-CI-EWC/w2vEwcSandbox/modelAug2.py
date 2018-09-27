@@ -30,7 +30,7 @@ class Model:
         h1 = tf.nn.relu(tf.matmul(x,W1) + b1) # hidden layer
         self.y = tf.matmul(h1,W2) + b2 # output layer
 
-        self.var_list = [W1, b1, W2, b2]
+        self.var_list = [W1, b1, W2, b2] # List of weights
 
         # vanilla single-task loss
         self.cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=self.y))
@@ -48,7 +48,7 @@ class Model:
         for v in range(len(self.var_list)):
             self.F_accum.append(np.zeros(self.var_list[v].get_shape().as_list()))
 
-        # sampling a random class from softmax
+        # sampling a random class from softmax (grab output)
         probs = tf.nn.softmax(self.y)
         class_ind = tf.to_int32(tf.multinomial(tf.log(probs), 1)[0][0])
 
@@ -61,6 +61,7 @@ class Model:
             # select random input image
             im_ind = np.random.randint(imgset.shape[0])
             # compute first-order derivatives
+            #https://www.tensorflow.org/api_docs/python/tf/gradients
             ders = sess.run(tf.gradients(tf.log(probs[0,class_ind]), self.var_list), feed_dict={self.x: imgset[im_ind:im_ind+1]})
             # square the derivatives and add to total
             for v in range(len(self.F_accum)):
