@@ -87,7 +87,6 @@ for i in range(0, num_runs):
 
 
     # reset graph at every run
-    print(i)
     tf.reset_default_graph()
     
     # embedding matrix
@@ -139,7 +138,7 @@ for i in range(0, num_runs):
     
     # update weights after example
     for e in range(0, len(input_feed)):
-        print([input_feed[e]],[output_feed[e]])
+##        print([input_feed[e]],[output_feed[e]])
         x = sess.run(optimizer, feed_dict = {train_inputs: [input_feed[e]], train_labels: [output_feed[e]]})
 
 
